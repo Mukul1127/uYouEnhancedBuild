@@ -8,8 +8,13 @@ on:
         default: "3.0.3"
         required: true
         type: string
+      uyouenhanced_version:
+        description: "The version of uYouEnhanced (*FULL* SHA, Tag, or Branch)"
+        default: "main"
+        required: true
+        type: string
       decrypted_youtube_url:
-        description: "The direct download link to the decrypted YouTube ipa"
+        description: "The direct download link to the *decrypted* YouTube ipa"
         default: ""
         required: true
         type: string
@@ -20,10 +25,11 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - name: Checkout Main
+      - name: Checkout Repository
         uses: actions/checkout@v4.1.1
         with:
           repository: arichornlover/uYouEnhanced
+          ref: ${{ inputs.uyouenhanced_version }}
           path: main
           submodules: recursive
 
@@ -41,22 +47,30 @@ jobs:
         id: SDK
         uses: actions/cache@v4.0.2
         env:
-          cache-name: iOS-14.0-SDK
+          cache-name: iOS-SDK
         with:
           path: theos/sdks/
           key: ${{ env.cache-name }}
           restore-keys: ${{ env.cache-name }}
 
+#      - name: Download iOS SDK
+#        if: steps.SDK.outputs.cache-hit != 'true'
+#        run: |
+#          git clone --quiet -n --depth=1 --filter=tree:0 https://github.com/xybp888/iOS-SDKs
+#          cd iOS-SDKs
+#          git sparse-checkout set --no-cone iPhoneOS14.0.sdk
+#          git checkout
+#          mv *.sdk $THEOS/sdks
+#        env:
+#          THEOS: ${{ github.workspace }}/theos
+
       - name: Download iOS SDK
-        if: steps.SDK.outputs.cache-hit != 'true'
-        run: |
-          git clone --quiet -n --depth=1 --filter=tree:0 https://github.com/xybp888/iOS-SDKs
-          cd iOS-SDKs
-          git sparse-checkout set --no-cone iPhoneOS14.0.sdk
-          git checkout
-          mv *.sdk $THEOS/sdks
-        env:
-          THEOS: ${{ github.workspace }}/theos
+        uses: actions/checkout@v4.1.1
+        with:
+          repository: xybp888/iOS-SDKs
+          path: theos/sdks
+          sparse-checkout: 'iPhoneOS14.0.sdk'
+          sparse-checkout-cone-mode: false
 
       - name: Setup Theos Jailed
         uses: actions/checkout@v4.1.1
