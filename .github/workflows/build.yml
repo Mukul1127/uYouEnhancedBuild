@@ -91,6 +91,7 @@ jobs:
       - name: Build Package
         id: build_package
         run: |
+          cd ${{ github.workspace }}/main
           sed -i '' "1s#.*#export TARGET = iphone:clang:14.0:14.0#g" Makefile
           gmake package THEOS_PACKAGE_SCHEME=rootless IPA=Payload/YouTube.app FINALPACKAGE=1
           echo "package=$(ls -t packages | head -n1)" >>$GITHUB_OUTPUT
