@@ -33,6 +33,19 @@ jobs:
           path: main
           submodules: recursive
 
+      - name: Prepare YouTube iPA
+        id: prepare_youtube
+        run: |
+          cd ${{ github.workspace }}/main
+          wget "$YOUTUBE_URL" -O YouTube.ipa
+          unzip -q YouTube.ipa
+          youtube_version=$(defaults read "$(pwd)/Payload/YouTube.app/Info" CFBundleVersion)
+          sed -i "" "17s#.*#YOUTUBE_VERSION = ${youtube_version}#g" Makefile
+          echo "youtube_version=${youtube_version}" >> $GITHUB_OUTPUT
+        env:
+          THEOS: ${{ github.workspace }}/theos
+          YOUTUBE_URL: ${{ inputs.decrypted_youtube_url }}
+
       - name: Install Dependencies
         run: brew install ldid dpkg make
 
@@ -42,35 +55,6 @@ jobs:
           repository: theos/theos
           path: theos
           submodules: recursive
-      
-      - name: SDK Caching
-        id: SDK
-        uses: actions/cache@v4.0.2
-        env:
-          cache-name: iOS-SDK
-        with:
-          path: theos/sdks/
-          key: ${{ env.cache-name }}
-          restore-keys: ${{ env.cache-name }}
-
-#      - name: Download iOS SDK
-#        if: steps.SDK.outputs.cache-hit != 'true'
-#        run: |
-#          git clone --quiet -n --depth=1 --filter=tree:0 https://github.com/xybp888/iOS-SDKs
-#          cd iOS-SDKs
-#          git sparse-checkout set --no-cone iPhoneOS14.0.sdk
-#          git checkout
-#          mv *.sdk $THEOS/sdks
-#        env:
-#          THEOS: ${{ github.workspace }}/theos
-
-      - name: Download iOS SDK
-        uses: actions/checkout@v4.1.1
-        with:
-          repository: xybp888/iOS-SDKs
-          path: theos/sdks
-          sparse-checkout: 'iPhoneOS14.0.sdk'
-          sparse-checkout-cone-mode: false
 
       - name: Setup Theos Jailed
         uses: actions/checkout@v4.1.1
@@ -84,25 +68,29 @@ jobs:
           ./theos-jailed/install
         env:
           THEOS: ${{ github.workspace }}/theos
-
-      - name: Prepare YouTube iPA
-        id: prepare_youtube
-        run: |
-          wget "$YOUTUBE_URL" --no-verbose -O main/YouTube.ipa
-          cd ${{ github.workspace }}/main
-          mv YouTube.ipa YouTube.zip
-          unzip -q YouTube.zip
-          youtube_version=$(defaults read "$(pwd)/Payload/YouTube.app/Info" CFBundleVersion)
-          sed -i '' "17s#.*#YOUTUBE_VERSION = ${youtube_version}#g" Makefile
-          echo "youtube_version=${youtube_version}" >> $GITHUB_OUTPUT
+      
+      - name: SDK Caching
+        id: SDK
+        uses: actions/cache@v4.0.2
         env:
-          THEOS: ${{ github.workspace }}/theos
-          YOUTUBE_URL: ${{ inputs.decrypted_youtube_url }}
+          cache-name: iOS-SDK
+        with:
+          path: theos/sdks/
+          key: ${{ env.cache-name }}
+          restore-keys: ${{ env.cache-name }}
+
+      - name: Download iOS SDK
+        if: steps.SDK.outputs.cache-hit != "true"
+        uses: actions/checkout@v4.1.1
+        with:
+          repository: xybp888/iOS-SDKs
+          path: theos/sdks
+          sparse-checkout: "iPhoneOS14.0.sdk"
+          sparse-checkout-cone-mode: false
 
       - name: Build Package
         id: build_package
         run: |
-          cd ${{ github.workspace }}/main
           sed -i '' "1s#.*#export TARGET = iphone:clang:14.0:14.0#g" Makefile
           gmake package THEOS_PACKAGE_SCHEME=rootless IPA=Payload/YouTube.app FINALPACKAGE=1
           echo "package=$(ls -t packages | head -n1)" >>$GITHUB_OUTPUT
