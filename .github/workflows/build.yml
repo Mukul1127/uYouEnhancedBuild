@@ -98,7 +98,6 @@ jobs:
           THEOS: ${{ github.workspace }}/theos
 
       - name: Upload Artifact
-        if: ${{ inputs.upload_artifact }}
         uses: actions/upload-artifact@v4.3.1
         env:
           UYOU_VERSION: ${{ inputs.uyou_version }}
