@@ -83,16 +83,15 @@ jobs:
         if: steps.SDK.outputs.cache-hit != 'true'
         uses: actions/checkout@v4.1.1
         with:
-          repository: xybp888/iOS-SDKs
+          repository: arichornlover/sdks
           path: theos/sdks
-          sparse-checkout: "iPhoneOS14.0.sdk"
+          sparse-checkout: "iPhoneOS16.4.sdk"
           sparse-checkout-cone-mode: false
 
       - name: Build Package
         id: build_package
         run: |
           cd ${{ github.workspace }}/main
-          sed -i '' "1s#.*#export TARGET = iphone:clang:14.0:14.0#g" Makefile
           gmake package THEOS_PACKAGE_SCHEME=rootless IPA=Payload/YouTube.app FINALPACKAGE=1
           echo "package=$(ls -t packages | head -n1)" >>$GITHUB_OUTPUT
         env:
