@@ -80,7 +80,7 @@ jobs:
           restore-keys: ${{ env.cache-name }}
 
       - name: Download iOS SDK
-        if: steps.SDK.outputs.cache-hit != "true"
+        if: steps.SDK.outputs.cache-hit != 'true'
         uses: actions/checkout@v4.1.1
         with:
           repository: xybp888/iOS-SDKs
