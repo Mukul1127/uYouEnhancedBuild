@@ -58,7 +58,7 @@ jobs:
 
       - name: Set Theos Environment Variable
         run: |
-          echo "THEOS=~/theos" >> $GITHUB_ENV
+          echo "THEOS=${{ github.workspace }}/theos" >> $GITHUB_ENV
 
       - name: Setup Theos Jailed
         uses: actions/checkout@v4.1.1
