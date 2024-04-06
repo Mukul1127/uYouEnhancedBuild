@@ -25,27 +25,6 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4.1.1
-        with:
-          repository: arichornlover/uYouEnhanced
-          ref: ${{ inputs.uyouenhanced_version }}
-          path: main
-          submodules: recursive
-
-      - name: Prepare YouTube iPA
-        id: prepare_youtube
-        run: |
-          cd ${{ github.workspace }}/main
-          wget "$YOUTUBE_URL" -O YouTube.ipa
-          unzip -q YouTube.ipa
-          youtube_version=$(defaults read "$(pwd)/Payload/YouTube.app/Info" CFBundleVersion)
-          sed -i "" "17s#.*#YOUTUBE_VERSION = ${youtube_version}#g" Makefile
-          echo "youtube_version=${youtube_version}" >> $GITHUB_OUTPUT
-        env:
-          THEOS: ${{ github.workspace }}/theos
-          YOUTUBE_URL: ${{ inputs.decrypted_youtube_url }}
-
       - name: Install Dependencies
         run: brew install ldid make
 
@@ -77,6 +56,10 @@ jobs:
           sparse-checkout: "iPhoneOS16.4.sdk"
           sparse-checkout-cone-mode: false
 
+      - name: Set Theos Environment Variable
+        run: |
+          echo "THEOS=~/theos" >> $GITHUB_ENV
+
       - name: Setup Theos Jailed
         uses: actions/checkout@v4.1.1
         with:
@@ -87,8 +70,23 @@ jobs:
       - name: Install Theos Jailed
         run: |
           ./theos-jailed/install
-        env:
-          THEOS: ${{ github.workspace }}/theos
+    
+      - name: Checkout Repository
+        uses: actions/checkout@v4.1.1
+        with:
+          repository: arichornlover/uYouEnhanced
+          ref: ${{ inputs.uyouenhanced_version }}
+          path: main
+          submodules: recursive
+
+      - name: Prepare YouTube iPA
+        id: prepare_youtube
+        run: |
+          cd ${{ github.workspace }}/main
+          wget "${{ inputs.decrypted_youtube_url }}" -O YouTube.ipa
+          unzip -q YouTube.ipa
+          youtube_version=$(defaults read "$(pwd)/Payload/YouTube.app/Info" CFBundleVersion)
+          sed -i "" "17s#.*#YOUTUBE_VERSION = ${youtube_version}#g" Makefile
 
       - name: Build Package
         id: build_package
@@ -96,15 +94,10 @@ jobs:
           cd ${{ github.workspace }}/main
           gmake package THEOS_PACKAGE_SCHEME=rootless IPA=Payload/YouTube.app FINALPACKAGE=1
           echo "package=$(ls -t packages | head -n1)" >>$GITHUB_OUTPUT
-        env:
-          THEOS: ${{ github.workspace }}/theos
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4.3.1
-        env:
-          UYOU_VERSION: ${{ inputs.uyou_version }}
-          YOUTUBE_VERSION: ${{ steps.prepare_youtube.outputs.youtube_version }}
         with:
-          name: uYouEnhanced_${{ env.YOUTUBE_VERSION }}_${{ env.UYOU_VERSION }}
+          name: uYouEnhanced
           path: ${{ github.workspace }}/main/packages/${{ steps.build_package.outputs.package }}
           if-no-files-found: error
