@@ -47,14 +47,35 @@ jobs:
           YOUTUBE_URL: ${{ inputs.decrypted_youtube_url }}
 
       - name: Install Dependencies
-        run: brew install ldid dpkg make
+        run: brew install ldid make
+
+      - name: Check cache
+        run: |
+          echo upstream_heads=`git ls-remote https://github.com/theos/theos | head -n 1 | cut -f 1`-`git ls-remote https://github.com/arichornlover/sdks | head -n 1 | cut -f 1` >> $GITHUB_ENV
+
+      - name: Use cache
+        id: cache
+        uses: actions/cache@v4.0.2
+        with:
+          path: ~/theos
+          key: ${{ env.upstream_heads }}
 
       - name: Setup Theos
+        if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/checkout@v4.1.1
         with:
           repository: theos/theos
           path: theos
           submodules: recursive
+
+      - name: Setup iOS SDK
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: actions/checkout@v4.1.1
+        with:
+          repository: arichornlover/sdks
+          path: theos/sdks
+          sparse-checkout: "iPhoneOS16.4.sdk"
+          sparse-checkout-cone-mode: false
 
       - name: Setup Theos Jailed
         uses: actions/checkout@v4.1.1
@@ -68,25 +89,6 @@ jobs:
           ./theos-jailed/install
         env:
           THEOS: ${{ github.workspace }}/theos
-      
-      - name: SDK Caching
-        id: SDK
-        uses: actions/cache@v4.0.2
-        env:
-          cache-name: iOS-SDK
-        with:
-          path: theos/sdks/
-          key: ${{ env.cache-name }}
-          restore-keys: ${{ env.cache-name }}
-
-      - name: Download iOS SDK
-        if: steps.SDK.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4.1.1
-        with:
-          repository: arichornlover/sdks
-          path: theos/sdks
-          sparse-checkout: "iPhoneOS16.4.sdk"
-          sparse-checkout-cone-mode: false
 
       - name: Build Package
         id: build_package
