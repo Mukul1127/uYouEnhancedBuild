@@ -80,9 +80,9 @@ jobs:
           submodules: recursive
 
       - name: Prepare YouTube IPA
+        working-directory: ${{ github.workspace }}/main
         id: prepare_youtube
         run: |
-          cd ${{ github.workspace }}/main
           wget "${{ inputs.decrypted_youtube_url }}" -O YouTube.ipa
           unzip -q YouTube.ipa
           youtube_version=$(defaults read "$(pwd)/Payload/YouTube.app/Info" CFBundleVersion)
@@ -90,8 +90,8 @@ jobs:
           echo "youtube_version=${youtube_version}" >> $GITHUB_OUTPUT
           
       - name: Build Package
+        working-directory: ${{ github.workspace }}/main
         run: |
-          cd ${{ github.workspace }}/main
           gmake package THEOS_PACKAGE_SCHEME=rootless IPA=Payload/YouTube.app FINALPACKAGE=1
 
       - name: Create Draft Release
@@ -99,9 +99,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           UYOU_VERSION: ${{ inputs.uyou_version }}
+          UYOUENHANCED_VERSION: ${{ inputs.uyouenhanced_version }}
           YOUTUBE_VERSION: ${{ steps.prepare_youtube.outputs.youtube_version }}
         with:
-          tag_name: v${{ env.YOUTUBE_VERSION }}-${{ env.UYOU_VERSION }}-(${{ github.run_number }})
-          name: v${{ env.YOUTUBE_VERSION }}-${{ env.UYOU_VERSION }}-(${{ github.run_number }})
+          tag_name: v${{ env.YOUTUBE_VERSION }}-${{ env.UYOU_VERSION }}-${{ env.UYOUENHANCED_VERSION }}-(${{ github.run_number }})
+          name: v${{ env.YOUTUBE_VERSION }}-${{ env.UYOU_VERSION }}-${{ env.UYOUENHANCED_VERSION }}-(${{ github.run_number }})
           files: main/packages/*.ipa
           draft: true
