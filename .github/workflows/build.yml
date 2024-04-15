@@ -79,7 +79,7 @@ jobs:
           path: main
           submodules: recursive
 
-      - name: Prepare YouTube iPA
+      - name: Prepare YouTube IPA
         id: prepare_youtube
         run: |
           cd ${{ github.workspace }}/main
@@ -87,17 +87,21 @@ jobs:
           unzip -q YouTube.ipa
           youtube_version=$(defaults read "$(pwd)/Payload/YouTube.app/Info" CFBundleVersion)
           sed -i "" "17s#.*#YOUTUBE_VERSION = ${youtube_version}#g" Makefile
-
+          echo "youtube_version=${youtube_version}" >> $GITHUB_OUTPUT
+          
       - name: Build Package
-        id: build_package
         run: |
           cd ${{ github.workspace }}/main
           gmake package THEOS_PACKAGE_SCHEME=rootless IPA=Payload/YouTube.app FINALPACKAGE=1
-          echo "package=$(ls -t packages | head -n1)" >>$GITHUB_OUTPUT
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4.3.1
+      - name: Create Draft Release
+        uses: softprops/action-gh-release@v2.0.4
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          UYOU_VERSION: ${{ inputs.uyou_version }}
+          YOUTUBE_VERSION: ${{ steps.prepare_youtube.outputs.youtube_version }}
         with:
-          name: uYouEnhanced
-          path: ${{ github.workspace }}/main/packages/${{ steps.build_package.outputs.package }}
-          if-no-files-found: error
+          tag_name: v${{ env.YOUTUBE_VERSION }}-${{ env.UYOU_VERSION }}-(${{ github.run_number }})
+          name: v${{ env.YOUTUBE_VERSION }}-${{ env.UYOU_VERSION }}-(${{ github.run_number }})
+          files: main/packages/*.ipa
+          draft: true
