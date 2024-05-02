@@ -25,6 +25,8 @@ jobs:
     runs-on: macos-latest
     permissions:
       contents: write
+    env:
+      THEOS: ${{ github.workspace }}/theos
 
     steps:
       - name: Checkout Repository
@@ -75,10 +77,6 @@ jobs:
           path: theos/sdks
           sparse-checkout: "iPhoneOS16.4.sdk"
           sparse-checkout-cone-mode: false
-
-      - name: Set Theos Environment Variable
-        run: |
-          echo "THEOS=${{ github.workspace }}/theos" >> $GITHUB_ENV
 
       - name: Setup Theos Jailed
         uses: actions/checkout@v4.1.1
