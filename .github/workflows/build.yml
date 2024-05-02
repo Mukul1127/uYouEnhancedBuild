@@ -54,11 +54,11 @@ jobs:
         run: |
           echo upstream_heads=`git ls-remote https://github.com/theos/theos | head -n 1 | cut -f 1`-`git ls-remote https://github.com/arichornlover/sdks | head -n 1 | cut -f 1` >> $GITHUB_ENV
 
-      - name: Use cache
+      - name: Restore cache if available
         id: cache
-        uses: actions/cache@v4.0.2
+        uses: actions/cache/restore@v4.0.2
         with:
-          path: ~/theos
+          path: ${{ github.workspace }}/theos
           key: ${{ env.upstream_heads }}
 
       - name: Setup Theos
@@ -77,6 +77,13 @@ jobs:
           path: theos/sdks
           sparse-checkout: "iPhoneOS16.4.sdk"
           sparse-checkout-cone-mode: false
+
+      - name: Save cache if available
+        if: steps.cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4.0.2
+        with:
+          path: ${{ github.workspace }}/theos
+          key: ${{ env.upstream_heads }}
 
       - name: Setup Theos Jailed
         uses: actions/checkout@v4.1.1
