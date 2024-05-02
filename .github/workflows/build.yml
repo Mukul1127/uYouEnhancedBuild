@@ -88,8 +88,9 @@ jobs:
           submodules: recursive
 
       - name: Install Theos Jailed
+        working-directory: ${{ github.workspace }}/theos-jailed
         run: |
-          ./theos-jailed/install
+          install
           
       - name: Build Package
         working-directory: ${{ github.workspace }}/main
@@ -100,9 +101,9 @@ jobs:
         uses: softprops/action-gh-release@v2.0.4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          YOUTUBE_VERSION: ${{ steps.prepare_youtube.outputs.youtube_version }}
           UYOU_VERSION: ${{ inputs.uyou_version }}
           UYOUENHANCED_VERSION: ${{ inputs.uyouenhanced_version }}
-          YOUTUBE_VERSION: ${{ steps.prepare_youtube.outputs.youtube_version }}
         with:
           tag_name: (v${{ env.YOUTUBE_VERSION }})-(${{ env.UYOU_VERSION }})-(${{ env.UYOUENHANCED_VERSION }})-(${{ github.run_number }})
           name: (v${{ env.YOUTUBE_VERSION }})-(${{ env.UYOU_VERSION }})-(${{ env.UYOUENHANCED_VERSION }})-(${{ github.run_number }})
