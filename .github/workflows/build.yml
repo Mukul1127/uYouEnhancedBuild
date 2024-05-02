@@ -3,19 +3,19 @@ name: Build uYouEnhanced
 on:
   workflow_dispatch:
     inputs:
+      decrypted_youtube_url:
+        description: "The *decrypted* YouTube ipa (Provide direct download link)."
+        default: ""
+        required: true
+        type: string
       uyou_version:
-        description: "The version of uYou"
+        description: "The version of uYou to inject (Provide number)"
         default: "3.0.3"
         required: true
         type: string
       uyouenhanced_version:
-        description: "The version of uYouEnhanced (*FULL* SHA, Tag, or Branch)"
+        description: "The version of uYouEnhanced to inject (Provide *FULL* SHA, Tag, or Branch)."
         default: "main"
-        required: true
-        type: string
-      decrypted_youtube_url:
-        description: "The direct download link to the *decrypted* YouTube ipa"
-        default: ""
         required: true
         type: string
 
@@ -27,6 +27,24 @@ jobs:
       contents: write
 
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4.1.1
+        with:
+          repository: arichornlover/uYouEnhanced
+          ref: ${{ inputs.uyouenhanced_version }}
+          path: main
+          submodules: recursive
+
+      - name: Prepare YouTube IPA
+        working-directory: ${{ github.workspace }}/main
+        id: prepare_youtube
+        run: |
+          wget "${{ inputs.decrypted_youtube_url }}" -O YouTube.ipa
+          unzip -q YouTube.ipa
+          youtube_version=$(defaults read "$(pwd)/Payload/YouTube.app/Info" CFBundleVersion)
+          sed -i "" "17s#.*#YOUTUBE_VERSION = ${youtube_version}#g" Makefile
+          echo "youtube_version=${youtube_version}" >> $GITHUB_OUTPUT
+    
       - name: Install Dependencies
         run: brew install ldid make
 
@@ -72,24 +90,6 @@ jobs:
       - name: Install Theos Jailed
         run: |
           ./theos-jailed/install
-    
-      - name: Checkout Repository
-        uses: actions/checkout@v4.1.1
-        with:
-          repository: arichornlover/uYouEnhanced
-          ref: ${{ inputs.uyouenhanced_version }}
-          path: main
-          submodules: recursive
-
-      - name: Prepare YouTube IPA
-        working-directory: ${{ github.workspace }}/main
-        id: prepare_youtube
-        run: |
-          wget "${{ inputs.decrypted_youtube_url }}" -O YouTube.ipa
-          unzip -q YouTube.ipa
-          youtube_version=$(defaults read "$(pwd)/Payload/YouTube.app/Info" CFBundleVersion)
-          sed -i "" "17s#.*#YOUTUBE_VERSION = ${youtube_version}#g" Makefile
-          echo "youtube_version=${youtube_version}" >> $GITHUB_OUTPUT
           
       - name: Build Package
         working-directory: ${{ github.workspace }}/main
