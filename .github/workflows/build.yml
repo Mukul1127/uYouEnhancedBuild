@@ -68,7 +68,6 @@ jobs:
           repository: theos/theos
           path: theos
           submodules: recursive
-          ref: 5bfdc3cb7133ec1cab43182115d902e2b57c9eac
 
       - name: Setup iOS SDK
         if: steps.cache.outputs.cache-hit != 'true'
