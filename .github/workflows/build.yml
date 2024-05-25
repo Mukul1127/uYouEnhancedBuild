@@ -4,12 +4,12 @@ on:
   workflow_dispatch:
     inputs:
       decrypted_youtube_url:
-        description: "The *decrypted* YouTube ipa (Provide direct download link)."
+        description: "The *decrypted* YouTube ipa (Provide Direct Download Link)."
         default: ""
         required: true
         type: string
       uyou_version:
-        description: "The version of uYou to inject (Provide number)"
+        description: "The version of uYou to inject (Provide Number)"
         default: "3.0.3"
         required: true
         type: string
@@ -22,7 +22,7 @@ on:
 jobs:
   build:
     name: Build uYouEnhanced
-    runs-on: macos-12
+    runs-on: macos-latest
     permissions:
       contents: write
     env:
@@ -30,7 +30,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.6
         with:
           repository: arichornlover/uYouEnhanced
           ref: ${{ inputs.uyouenhanced_version }}
@@ -63,15 +63,16 @@ jobs:
 
       - name: Setup Theos
         if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.6
         with:
           repository: theos/theos
           path: theos
           submodules: recursive
+          ref: 5bfdc3cb7133ec1cab43182115d902e2b57c9eac
 
       - name: Setup iOS SDK
         if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.6
         with:
           repository: arichornlover/sdks
           path: theos/sdks
@@ -103,7 +104,7 @@ jobs:
           gmake package THEOS_PACKAGE_SCHEME=rootless IPA=Payload/YouTube.app FINALPACKAGE=1
 
       - name: Create Draft Release
-        uses: softprops/action-gh-release@v2.0.4
+        uses: softprops/action-gh-release@v2.0.5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           YOUTUBE_VERSION: ${{ steps.prepare_youtube.outputs.youtube_version }}
