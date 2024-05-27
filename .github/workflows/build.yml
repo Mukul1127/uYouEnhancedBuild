@@ -98,8 +98,10 @@ jobs:
           ./install
 
       - name: Fix Compilation
+        working-directory: ${{ github.workspace }}/main
         run: |
-          mkdir -p theos/lib/iphone/rootless
+          mkdir -p ${{ github.workspace }}/theos/lib/iphone/rootless
+          sed -i '' "1s#.*#export TARGET = iphone:clang:17.5:14.0#g" Makefile
           
       - name: Build Package
         working-directory: ${{ github.workspace }}/main
