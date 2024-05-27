@@ -102,6 +102,7 @@ jobs:
         run: |
           mkdir -p ${{ github.workspace }}/theos/lib/iphone/rootless
           sed -i '' "1s#.*#export TARGET = iphone:clang:17.5:14.0#g" Makefile
+          sed -i '' "1s#.*#TARGET := iphone:clang:17.5:14.0#g" Tweaks/YTHoldForSpeed/Makefile
           
       - name: Build Package
         working-directory: ${{ github.workspace }}/main
