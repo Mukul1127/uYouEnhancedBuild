@@ -41,7 +41,7 @@ jobs:
         working-directory: ${{ github.workspace }}/main
         id: prepare_youtube
         run: |
-          wget "${{ inputs.decrypted_youtube_url }}" -O YouTube.ipa
+          wget "${{ inputs.decrypted_youtube_url }}" --no-verbose -O YouTube.ipa
           unzip -q YouTube.ipa
           youtube_version=$(defaults read "$(pwd)/Payload/YouTube.app/Info" CFBundleVersion)
           sed -i "" "17s#.*#YOUTUBE_VERSION = ${youtube_version}#g" Makefile
@@ -97,15 +97,11 @@ jobs:
         run: |
           ./install
 
-      - name: Fix Compilation
+      - name: Fix Compilation & Build
         working-directory: ${{ github.workspace }}/main
         run: |
           sed -i '' "1s#.*#export TARGET = iphone:clang:latest:14.0#g" Makefile
           sed -i '' "1s#.*#TARGET := iphone:clang:latest:14.0#g" Tweaks/YTHoldForSpeed/Makefile
-          
-      - name: Build Package
-        working-directory: ${{ github.workspace }}/main
-        run: |
           gmake package THEOS_PACKAGE_SCHEME=rootless IPA=Payload/YouTube.app FINALPACKAGE=1
 
       - name: Create Draft Release
