@@ -97,10 +97,9 @@ jobs:
         run: |
           ./install
 
-      - name: Fix Compilation & Build
+      - name: Build IPA
         working-directory: ${{ github.workspace }}/main
         run: |
-          sed -i '' "1s#.*#export TARGET = iphone:clang:latest:14.0#g" Makefile
           gmake package THEOS_PACKAGE_SCHEME=rootless IPA=Payload/YouTube.app FINALPACKAGE=1
 
       - name: Create Draft Release
