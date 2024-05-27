@@ -78,6 +78,10 @@ jobs:
           sparse-checkout: "iPhoneOS16.4.sdk"
           sparse-checkout-cone-mode: false
 
+      - name: Theo Fix?
+        run: |
+          mkdir -p theos/lib/iphone/rootless
+
       - name: Save cache if available
         if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4.0.2
@@ -86,7 +90,7 @@ jobs:
           key: ${{ env.upstream_heads }}
 
       - name: Setup Theos Jailed
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.6
         with:
           repository: qnblackcat/theos-jailed
           path: theos-jailed
