@@ -78,10 +78,6 @@ jobs:
           sparse-checkout: "iPhoneOS16.4.sdk"
           sparse-checkout-cone-mode: false
 
-      - name: Theo Fix?
-        run: |
-          mkdir -p theos/lib/iphone/rootless
-
       - name: Save cache if available
         if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4.0.2
@@ -100,6 +96,10 @@ jobs:
         working-directory: ${{ github.workspace }}/theos-jailed
         run: |
           ./install
+
+      - name: Fix Compilation
+        run: |
+          mkdir -p theos/lib/iphone/rootless
           
       - name: Build Package
         working-directory: ${{ github.workspace }}/main
