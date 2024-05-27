@@ -52,7 +52,7 @@ jobs:
 
       - name: Check cache
         run: |
-          echo upstream_heads=`git ls-remote https://github.com/theos/theos | head -n 1 | cut -f 1`-`git ls-remote https://github.com/arichornlover/sdks | head -n 1 | cut -f 1` >> $GITHUB_ENV
+          echo upstream_heads=`git ls-remote https://github.com/theos/theos | head -n 1 | cut -f 1`-`git ls-remote https://github.com/xybp888/iOS-SDKs | head -n 1 | cut -f 1` >> $GITHUB_ENV
 
       - name: Restore cache if available
         id: cache
@@ -73,9 +73,9 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/checkout@v4.1.6
         with:
-          repository: arichornlover/sdks
+          repository: xybp888/iOS-SDKs
           path: theos/sdks
-          sparse-checkout: "iPhoneOS17.0.3.sdk"
+          sparse-checkout: "iPhoneOS17.5.sdk"
           sparse-checkout-cone-mode: false
 
       - name: Save cache if available
