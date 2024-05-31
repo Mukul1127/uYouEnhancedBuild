@@ -10,7 +10,7 @@ on:
         type: string
       uyou_version:
         description: "The version of uYou to inject (Provide Number)"
-        default: "3.0.3"
+        default: "3.0.4"
         required: true
         type: string
       uyouenhanced_version:
@@ -52,7 +52,7 @@ jobs:
 
       - name: Check cache
         run: |
-          echo upstream_heads=`git ls-remote https://github.com/theos/theos | head -n 1 | cut -f 1`-`git ls-remote https://github.com/arichornlover/sdks | head -n 1 | cut -f 1` >> $GITHUB_ENV
+          echo upstream_heads=`git ls-remote https://github.com/theos/theos | head -n 1 | cut -f 1`-`git ls-remote https://github.com/theos/sdks | head -n 1 | cut -f 1` >> $GITHUB_ENV
 
       - name: Restore cache if available
         id: cache
@@ -73,9 +73,9 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/checkout@v4.1.6
         with:
-          repository: arichornlover/sdks
+          repository: theos/sdks
           path: theos/sdks
-          sparse-checkout: "iPhoneOS16.4.sdk"
+          sparse-checkout: "iPhoneOS16.5.sdk"
           sparse-checkout-cone-mode: false
 
       - name: Save cache if available
@@ -97,9 +97,15 @@ jobs:
         run: |
           ./install
 
-      - name: Build IPA
+      - name: Fix Compilation & Build IPA
         working-directory: ${{ github.workspace }}/main
         run: |
+          sed -i '' "1s#.*#export TARGET = iphone:clang:${{ inputs.sdk_version }}:14.0#g" Makefile
+          
+          sed -i '' "3s#.*#export TARGET = iphone:clang:${{ inputs.sdk_version }}:15.0#g" Tweaks/Alderis/Makefile
+          sed -i '' "5s#.*#export TARGET = iphone:clang:${{ inputs.sdk_version }}:12.0#g" Tweaks/Alderis/Makefile
+          sed -i '' "7s#.*#export TARGET = iphone:clang:${{ inputs.sdk_version }}:12.0#g" Tweaks/Alderis/Makefile
+          
           gmake package THEOS_PACKAGE_SCHEME=rootless IPA=Payload/YouTube.app FINALPACKAGE=1
 
       - name: Create Draft Release
