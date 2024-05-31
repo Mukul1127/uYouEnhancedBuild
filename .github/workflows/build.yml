@@ -100,11 +100,11 @@ jobs:
       - name: Fix Compilation & Build IPA
         working-directory: ${{ github.workspace }}/main
         run: |
-          sed -i '' "1s#.*#export TARGET = iphone:clang:${{ inputs.sdk_version }}:14.0#g" Makefile
+          sed -i '' "1s#.*#export TARGET = iphone:clang:16.5:14.0#g" Makefile
           
-          sed -i '' "3s#.*#export TARGET = iphone:clang:${{ inputs.sdk_version }}:15.0#g" Tweaks/Alderis/Makefile
-          sed -i '' "5s#.*#export TARGET = iphone:clang:${{ inputs.sdk_version }}:12.0#g" Tweaks/Alderis/Makefile
-          sed -i '' "7s#.*#export TARGET = iphone:clang:${{ inputs.sdk_version }}:12.0#g" Tweaks/Alderis/Makefile
+          sed -i '' "3s#.*#export TARGET = iphone:clang:16.5:15.0#g" Tweaks/Alderis/Makefile
+          sed -i '' "5s#.*#export TARGET = iphone:clang:16.5:12.0#g" Tweaks/Alderis/Makefile
+          sed -i '' "7s#.*#export TARGET = iphone:clang:16.5:12.0#g" Tweaks/Alderis/Makefile
           
           gmake package THEOS_PACKAGE_SCHEME=rootless IPA=Payload/YouTube.app FINALPACKAGE=1
 
