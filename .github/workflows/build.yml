@@ -102,6 +102,7 @@ jobs:
         working-directory: ${{ github.workspace }}/main
         run: |
           sed -i "" "s|YOUTUBE_VERSION = 19.23.3|YOUTUBE_VERSION = ${{ env.YOUTUBE_VERSION }}|g" Makefile
+          sed -i "" "s|UYOU_VERSION = 3.0.4|UYOU_VERSION = ${{ inputs.uyou_version }}|g" Makefile
           sed -i "" "s|iphone:clang:16.4:15.0|iphone:clang:16.5:15.0|g" Makefile
           gmake package THEOS_PACKAGE_SCHEME=rootless IPA=Payload/YouTube.app FINALPACKAGE=1
 
