@@ -81,7 +81,7 @@ jobs:
           sparse-checkout: "iPhoneOS16.5.sdk"
           sparse-checkout-cone-mode: false
 
-      - name: Save cache if available
+      - name: Save cache if needed
         if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/cache/save@v4.0.2
         with:
