@@ -91,7 +91,7 @@ jobs:
         with:
           repository: qnblackcat/theos-jailed
           path: theos-jailed
-          submodules: recursive
+          submodules: true
 
       - name: Install Theos Jailed
         working-directory: ${{ github.workspace }}/theos-jailed
