@@ -45,8 +45,6 @@ jobs:
           unzip -q YouTube.ipa
           
           youtube_version=$(defaults read "$(pwd)/Payload/YouTube.app/Info" CFBundleVersion)
-
-          sed -i "" "s|YOUTUBE_VERSION = 19.23.3|YOUTUBE_VERSION = ${youtube_version}|g" Makefile
           
           echo "YOUTUBE_VERSION=${youtube_version}" >> $GITHUB_ENV
     
@@ -100,9 +98,11 @@ jobs:
         run: |
           ./install
 
-      - name: Build IPA
+      - name: Update Makefile & Build IPA
         working-directory: ${{ github.workspace }}/main
-        run: |          
+        run: |
+          sed -i "" "s|YOUTUBE_VERSION = 19.23.3|YOUTUBE_VERSION = ${{ env.YOUTUBE_VERSION }}|g" Makefile
+          sed -i "" "s|iphone:clang:16.4:15.0|iphone:clang:16.5:15.0|g" Makefile
           gmake package THEOS_PACKAGE_SCHEME=rootless IPA=Payload/YouTube.app FINALPACKAGE=1
 
       - name: Create Draft Release
