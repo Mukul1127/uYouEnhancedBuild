@@ -29,15 +29,20 @@ jobs:
       THEOS: ${{ github.workspace }}/theos
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4.1.7
+      - name: 🛡️ Harden Runner
+        uses: step-security/harden-runner@17d0e2bd7d51742c71671bd19fa12bdc9d40a3d6 # v2.8.1
+        with:
+          egress-policy: audit
+    
+      - name: 🚚 Check out the repository
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           repository: driftywinds/uYouEnhanced
           ref: ${{ inputs.uyouenhanced_version }}
           path: main
           submodules: recursive
 
-      - name: Prepare YouTube IPA
+      - name: 🛠️ Prepare YouTube IPA
         working-directory: ${{ github.workspace }}/main
         id: prepare_youtube
         run: |
@@ -48,57 +53,55 @@ jobs:
           
           echo "YOUTUBE_VERSION=${youtube_version}" >> $GITHUB_ENV
     
-      - name: Install Dependencies
+      - name: 💾 Install System Dependencies
         run: brew install ldid make
 
-      - name: Check cache
-        run: |
-          echo upstream_heads=`git ls-remote https://github.com/theos/theos | head -n 1 | cut -f 1`-`git ls-remote https://github.com/theos/sdks | head -n 1 | cut -f 1` >> $GITHUB_ENV
+      - name: 🔍 Check cache
+        run: echo upstream_heads=`git ls-remote https://github.com/theos/theos | head -n 1 | cut -f 1`-`git ls-remote https://github.com/theos/sdks | head -n 1 | cut -f 1` >> $GITHUB_ENV
 
-      - name: Restore cache if available
+      - name: ♻️ Restore cache if available
         id: cache
-        uses: actions/cache/restore@v4.0.2
+        uses: actions/cache/restore@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
         with:
           path: ${{ github.workspace }}/theos
           key: ${{ env.upstream_heads }}
 
-      - name: Setup Theos
+      - name: ⚙️ Setup Theos
         if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           repository: theos/theos
           path: theos
           submodules: recursive
 
-      - name: Setup iOS SDK
+      - name: ⚙️ Setup iOS SDK
         if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4.1.7
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           repository: theos/sdks
           path: theos/sdks
           sparse-checkout: "iPhoneOS16.5.sdk"
           sparse-checkout-cone-mode: false
 
-      - name: Save cache if needed
+      - name: ♻️ Save cache if needed
         if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@v4.0.2
+        uses: actions/cache/save@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
         with:
           path: ${{ github.workspace }}/theos
           key: ${{ env.upstream_heads }}
 
-      - name: Setup Theos Jailed
-        uses: actions/checkout@v4.1.7
+      - name: ⚙️ Setup Theos Jailed
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           repository: qnblackcat/theos-jailed
           path: theos-jailed
           submodules: true
 
-      - name: Install Theos Jailed
+      - name: 💾 Install Theos Jailed
         working-directory: ${{ github.workspace }}/theos-jailed
-        run: |
-          ./install
+        run: ./install
 
-      - name: Update Makefile & Build IPA
+      - name: 📦 Build IPA
         working-directory: ${{ github.workspace }}/main
         run: |
           sed -i "" "s|YOUTUBE_VERSION = 19.23.3|YOUTUBE_VERSION = ${{ env.YOUTUBE_VERSION }}|g" Makefile
@@ -106,10 +109,8 @@ jobs:
           sed -i "" "s|iphone:clang:16.4:15.0|iphone:clang:16.5:15.0|g" Makefile
           gmake package THEOS_PACKAGE_SCHEME=rootless IPA=Payload/YouTube.app FINALPACKAGE=1
 
-      - name: Create Draft Release
-        uses: softprops/action-gh-release@v2.0.6
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: 🚀 Create Draft Release
+        uses: softprops/action-gh-release@a74c6b72af54cfa997e81df42d94703d6313a2d0 # v2.0.6
         with:
           tag_name: (v${{ env.YOUTUBE_VERSION }})-(${{ inputs.uyou_version }})-(${{ inputs.uyouenhanced_version }})-(${{ github.run_number }})
           name: (v${{ env.YOUTUBE_VERSION }})-(${{ inputs.uyou_version }})-(${{ inputs.uyouenhanced_version }})-(${{ github.run_number }})
