@@ -42,9 +42,9 @@ jobs:
         run: |
           wget "${{ inputs.decrypted_youtube_url }}" --no-verbose -O YouTube.ipa
           unzip -q YouTube.ipa
-          
+
           echo "YOUTUBE_VERSION=$(defaults read "$(pwd)/Payload/YouTube.app/Info" CFBundleVersion)" >> $GITHUB_ENV
-    
+
       - name: 💾 Install System Dependencies
         run: brew install ldid make
 
