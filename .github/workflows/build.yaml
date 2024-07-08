@@ -3,20 +3,20 @@ name: Build uYouEnhanced
 on:
   workflow_dispatch:
     inputs:
-      decrypted_youtube_url:
+      DECRYPTED_YOUTUBE_URL:
         description: "The *decrypted* YouTube ipa (Provide Direct Download Link)."
         default: ""
         required: true
         type: string
-      uyou_version:
+      UYOU_VERSION:
         description: "The version of uYou to inject (Provide Number)"
         default: "3.0.4"
         required: true
         type: string
-      uyouenhanced_version:
+      UYOUENHANCED_VERSION:
         description: "The version of uYouEnhanced to inject (Provide *FULL* SHA, Tag, or Branch)."
         default: "main"
-        required: true
+        required: false
         type: string
 
 jobs:
@@ -33,14 +33,14 @@ jobs:
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           repository: driftywinds/uYouEnhanced
-          ref: ${{ inputs.uyouenhanced_version }}
+          ref: ${{ inputs.uyouenhanced_version || github.ref }}
           path: main
           submodules: recursive
 
       - name: 🛠️ Prepare YouTube IPA
         working-directory: ${{ github.workspace }}/main
         run: |
-          wget "${{ inputs.decrypted_youtube_url }}" --no-verbose -O YouTube.ipa
+          wget "${{ inputs.DECRYPTED_YOUTUBE_URL }}" --no-verbose -O YouTube.ipa
           unzip -q YouTube.ipa
 
           echo "YOUTUBE_VERSION=$(defaults read "$(pwd)/Payload/YouTube.app/Info" CFBundleVersion)" >> $GITHUB_ENV
@@ -96,12 +96,11 @@ jobs:
       - name: 📦 Build IPA
         working-directory: ${{ github.workspace }}/main
         run: |
-          gmake package YOUTUBE_VERSION=${{ env.YOUTUBE_VERSION }} UYOU_VERSION=${{ inputs.uyou_version }} IPA=Payload/YouTube.app FINALPACKAGE=1
+          gmake package YOUTUBE_VERSION=${{ env.YOUTUBE_VERSION }} UYOU_VERSION=${{ inputs.UYOU_VERSION }} IPA=Payload/YouTube.app FINALPACKAGE=1
 
       - name: 🚀 Publish Draft Release
         uses: softprops/action-gh-release@a74c6b72af54cfa997e81df42d94703d6313a2d0 # v2.0.6
         with:
-          tag_name: (v${{ env.YOUTUBE_VERSION }})-(${{ inputs.uyou_version }})-(${{ inputs.uyouenhanced_version }})-(${{ github.run_number }})
-          name: (v${{ env.YOUTUBE_VERSION }})-(${{ inputs.uyou_version }})-(${{ inputs.uyouenhanced_version }})-(${{ github.run_number }})
+          tag_name: (v${{ env.YOUTUBE_VERSION }})-(${{ inputs.UYOU_VERSION }})-(${{ inputs.UYOUENHANCED_VERSION }})-(${{ github.run_number }})
           files: main/packages/*.ipa
           draft: true
