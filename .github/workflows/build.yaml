@@ -16,7 +16,7 @@ on:
       UYOUENHANCED_VERSION:
         description: "The version of uYouEnhanced to inject (Provide *FULL* SHA, Tag, or Branch)."
         default: "main"
-        required: false
+        required: true
         type: string
 
 jobs:
@@ -33,7 +33,7 @@ jobs:
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           repository: driftywinds/uYouEnhanced
-          ref: ${{ inputs.uyouenhanced_version || github.ref }}
+          ref: ${{ inputs.uyouenhanced_version }}
           path: main
           submodules: recursive
 
