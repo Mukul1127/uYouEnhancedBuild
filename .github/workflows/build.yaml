@@ -104,7 +104,7 @@ jobs:
           sed -i "" "s|iphone:clang:16.4:15.0|iphone:clang:16.5:15.0|g" Makefile
           gmake package THEOS_PACKAGE_SCHEME=rootless IPA=Payload/YouTube.app FINALPACKAGE=1
 
-      - name: 🚀 Create Draft Release
+      - name: 🚀 Publish Draft Release
         uses: softprops/action-gh-release@a74c6b72af54cfa997e81df42d94703d6313a2d0 # v2.0.6
         with:
           tag_name: (v${{ env.YOUTUBE_VERSION }})-(${{ inputs.uyou_version }})-(${{ inputs.uyouenhanced_version }})-(${{ github.run_number }})
