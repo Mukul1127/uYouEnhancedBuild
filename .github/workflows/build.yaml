@@ -39,14 +39,11 @@ jobs:
 
       - name: 🛠️ Prepare YouTube IPA
         working-directory: ${{ github.workspace }}/main
-        id: prepare_youtube
         run: |
           wget "${{ inputs.decrypted_youtube_url }}" --no-verbose -O YouTube.ipa
           unzip -q YouTube.ipa
           
-          youtube_version=$(defaults read "$(pwd)/Payload/YouTube.app/Info" CFBundleVersion)
-          
-          echo "YOUTUBE_VERSION=${youtube_version}" >> $GITHUB_ENV
+          echo "YOUTUBE_VERSION=$(defaults read "$(pwd)/Payload/YouTube.app/Info" CFBundleVersion)" >> $GITHUB_ENV
     
       - name: 💾 Install System Dependencies
         run: brew install ldid make
