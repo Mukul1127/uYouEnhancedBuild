@@ -90,11 +90,11 @@ jobs:
           submodules: true
 
       - name: 💾 Install Theos Jailed
-        working-directory: ${{ github.workspace }}/theos-jailed
+        working-directory: theos-jailed
         run: ./install
 
       - name: 📦 Build IPA
-        working-directory: ${{ github.workspace }}/main
+        working-directory: main
         run: |
           gmake package YOUTUBE_VERSION=${{ env.YOUTUBE_VERSION }} UYOU_VERSION=${{ inputs.UYOU_VERSION }} IPA=Payload/YouTube.app FINALPACKAGE=1
 
