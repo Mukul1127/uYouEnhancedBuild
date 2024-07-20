@@ -22,7 +22,7 @@ on:
 jobs:
   build:
     name: Build uYouEnhanced
-    runs-on: macos-12
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
     env:
