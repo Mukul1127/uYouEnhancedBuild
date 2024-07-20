@@ -46,7 +46,7 @@ jobs:
           echo "YOUTUBE_VERSION=$(defaults read "$(pwd)/Payload/YouTube.app/Info" CFBundleVersion)" >> $GITHUB_ENV
 
       - name: 💾 Install System Dependencies
-        run: brew install ldid make
+        run: brew install ldid-procursus make
 
       - name: 🔍 Check cache
         run: echo upstream_heads=`git ls-remote https://github.com/theos/theos | head -n 1 | cut -f 1`-`git ls-remote https://github.com/theos/sdks | head -n 1 | cut -f 1` >> $GITHUB_ENV
