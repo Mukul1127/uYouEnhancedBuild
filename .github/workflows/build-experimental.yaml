@@ -51,7 +51,9 @@ jobs:
           echo "YOUTUBE_VERSION=$(defaults read "$(pwd)/Payload/YouTube.app/Info" CFBundleVersion)" >> $GITHUB_ENV
 
       - name: 💾 Install System Dependencies
-        run: sudo apt install libplist-utils
+        run: |
+          sudo apt install libplist-utils
+          sudo ln -s /usr/bin/plistutil /usr/bin/plutil
 
       - name: 🔍 Check cache
         run: echo upstream_heads=`git ls-remote https://github.com/theos/theos | head -n 1 | cut -f 1`-`git ls-remote https://github.com/theos/sdks | head -n 1 | cut -f 1`-`git ls-remote https://github.com/kabiroberai/swift-toolchain-linux | head -n 1 | cut -f 1` >> $GITHUB_ENV
@@ -94,7 +96,7 @@ jobs:
       - name: ⚙️ Setup Theos Jailed
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
-          repository: Mukul1127/theos-jailed
+          repository: qnblackcat/theos-jailed
           path: theos-jailed
           submodules: true
 
