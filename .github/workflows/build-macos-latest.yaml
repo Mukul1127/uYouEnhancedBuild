@@ -97,6 +97,7 @@ jobs:
         working-directory: main
         run: |
           sed -i "" "s|iphone:clang:16.5:15.0|iphone:clang:17.5:15.0|g" Makefile
+          sed -i "" "s|iphone:clang:16.5:15.0|iphone:clang:17.5:15.0|g" Tweaks/YTHoldForSpeed/Makefile
           gmake package YOUTUBE_VERSION=${{ env.YOUTUBE_VERSION }} UYOU_VERSION=${{ inputs.UYOU_VERSION }} IPA=Payload/YouTube.app FINALPACKAGE=1
 
       - name: 🚀 Publish Draft Release
