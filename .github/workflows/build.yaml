@@ -1,4 +1,4 @@
-name: Build uYouEnhanced
+name: uYouEnhanced CI
 
 on:
   workflow_dispatch:
@@ -10,9 +10,9 @@ on:
         type: string
       UYOU_VERSION:
         description: "The version of uYou to inject (Provide Number)"
-        default: 3.0.4
+        default: "3.0.4"
         required: true
-        type: number
+        type: string
       UYOUENHANCED_VERSION:
         description: "The version of uYouEnhanced to inject (Provide *FULL* SHA, Tag, or Branch)."
         default: "main"
@@ -49,14 +49,14 @@ jobs:
         run: brew install ldid-procursus make
 
       - name: 🔍 Check cache
-        run: echo upstream_heads=`git ls-remote https://github.com/theos/theos | head -n 1 | cut -f 1`-`git ls-remote https://github.com/xybp888/iOS-SDKs | head -n 1 | cut -f 1` >> $GITHUB_ENV
+        run: echo UPSTREAM_HEADS=`git ls-remote https://github.com/theos/theos | head -n 1 | cut -f 1`-`git ls-remote https://github.com/xybp888/iOS-SDKs | head -n 1 | cut -f 1` >> $GITHUB_ENV
 
       - name: ♻️ Restore cache if available
         id: cache
         uses: actions/cache/restore@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
         with:
           path: ${{ github.workspace }}/theos
-          key: ${{ env.upstream_heads }}
+          key: ${{ env.UPSTREAM_HEADS }}
 
       - name: ⚙️ Setup Theos
         if: steps.cache.outputs.cache-hit != 'true'
@@ -80,7 +80,7 @@ jobs:
         uses: actions/cache/save@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
         with:
           path: ${{ github.workspace }}/theos
-          key: ${{ env.upstream_heads }}
+          key: ${{ env.UPSTREAM_HEADS }}
 
       - name: ⚙️ Setup Theos Jailed
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
@@ -101,7 +101,7 @@ jobs:
           gmake package YOUTUBE_VERSION=${{ env.YOUTUBE_VERSION }} UYOU_VERSION=${{ inputs.UYOU_VERSION }} IPA=Payload/YouTube.app FINALPACKAGE=1
 
       - name: 🚀 Publish Draft Release
-        uses: softprops/action-gh-release@a74c6b72af54cfa997e81df42d94703d6313a2d0 # v2.0.6
+        uses: softprops/action-gh-release@c062e08bd532815e2082a85e87e3ef29c3e6d191 # v2.0.8
         with:
           tag_name: (v${{ env.YOUTUBE_VERSION }})-(${{ inputs.UYOU_VERSION }})-(${{ inputs.UYOUENHANCED_VERSION }})-(${{ github.run_number }})
           files: main/packages/*.ipa
