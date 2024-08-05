@@ -23,8 +23,6 @@ jobs:
   build:
     name: Build uYouEnhanced
     runs-on: macos-latest
-    permissions:
-      contents: write
     env:
       THEOS: ${{ github.workspace }}/theos
 
@@ -104,8 +102,8 @@ jobs:
           gmake package YOUTUBE_VERSION=${{ env.YOUTUBE_VERSION }} UYOU_VERSION=${{ inputs.UYOU_VERSION }} IPA=Payload/YouTube.app FINALPACKAGE=1
 
       - name: 🚀 Publish Draft Release
-        uses: softprops/action-gh-release@c062e08bd532815e2082a85e87e3ef29c3e6d191 # v2.0.8
-        with:
-          tag_name: (v${{ env.YOUTUBE_VERSION }})-(${{ inputs.UYOU_VERSION }})-(${{ inputs.UYOUENHANCED_VERSION }})-(${{ github.run_number }})
-          files: main/packages/*.ipa
-          draft: true
+        working-directory: main
+        run: |
+          gh release create (v${{ env.YOUTUBE_VERSION }})-(${{ inputs.UYOU_VERSION }})-(${{ inputs.UYOUENHANCED_VERSION }})-(${{ github.run_number }}) main/packages/*.ipa -d
+        env:
+          GH_TOKEN: ${{ github.token }}
