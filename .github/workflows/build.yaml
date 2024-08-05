@@ -38,7 +38,7 @@ jobs:
           submodules: recursive
 
       - name: 🛠️ Prepare YouTube IPA
-        working-directory: ${{ github.workspace }}/main
+        working-directory: main
         run: |
           wget "${{ inputs.DECRYPTED_YOUTUBE_URL }}" --no-verbose -O YouTube.ipa
           unzip -q YouTube.ipa
