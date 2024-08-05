@@ -46,10 +46,12 @@ jobs:
           echo "YOUTUBE_VERSION=$(defaults read "$(pwd)/Payload/YouTube.app/Info" CFBundleVersion)" >> $GITHUB_ENV
 
       - name: 💾 Install System Dependencies
-        run: brew install ldid-procursus make
+        run: |
+          brew install ldid-procursus make
 
       - name: 🔍 Check cache
-        run: echo UPSTREAM_HEADS=`git ls-remote https://github.com/theos/theos | head -n 1 | cut -f 1`-`git ls-remote https://github.com/xybp888/iOS-SDKs | head -n 1 | cut -f 1` >> $GITHUB_ENV
+        run: |
+          echo UPSTREAM_HEADS=`git ls-remote https://github.com/theos/theos | head -n 1 | cut -f 1`-`git ls-remote https://github.com/xybp888/iOS-SDKs | head -n 1 | cut -f 1` >> $GITHUB_ENV
 
       - name: ♻️ Restore cache if available
         id: cache
@@ -91,7 +93,8 @@ jobs:
 
       - name: 💾 Install Theos Jailed
         working-directory: theos-jailed
-        run: ./install
+        run: |
+          ./install
 
       - name: 📦 Build IPA
         working-directory: main
