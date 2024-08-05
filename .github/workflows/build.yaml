@@ -10,9 +10,9 @@ on:
         type: string
       UYOU_VERSION:
         description: "The version of uYou to inject (Provide Number)"
-        default: "3.0.4"
+        default: 3.0.4
         required: true
-        type: string
+        type: number
       UYOUENHANCED_VERSION:
         description: "The version of uYouEnhanced to inject (Provide *FULL* SHA, Tag, or Branch)."
         default: "main"
