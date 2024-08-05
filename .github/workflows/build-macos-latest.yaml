@@ -49,7 +49,7 @@ jobs:
         run: brew install ldid-procursus make
 
       - name: 🔍 Check cache
-        run: echo upstream_heads=`git ls-remote https://github.com/theos/theos | head -n 1 | cut -f 1`-`git ls-remote https://github.com/theos/sdks | head -n 1 | cut -f 1` >> $GITHUB_ENV
+        run: echo upstream_heads=`git ls-remote https://github.com/theos/theos | head -n 1 | cut -f 1`-`git ls-remote https://github.com/xybp888/iOS-SDKs | head -n 1 | cut -f 1` >> $GITHUB_ENV
 
       - name: ♻️ Restore cache if available
         id: cache
@@ -70,9 +70,9 @@ jobs:
         if: steps.cache.outputs.cache-hit != 'true'
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
-          repository: theos/sdks
+          repository: xybp888/iOS-SDKs
           path: theos/sdks
-          sparse-checkout: "iPhoneOS16.5.sdk"
+          sparse-checkout: "iPhoneOS17.5.sdk"
           sparse-checkout-cone-mode: false
 
       - name: ♻️ Save cache if needed
@@ -96,6 +96,7 @@ jobs:
       - name: 📦 Build IPA
         working-directory: main
         run: |
+          sed -i "" "s|iphone:clang:16.5:15.0|iphone:clang:17.5:15.0|g" Makefile
           gmake package YOUTUBE_VERSION=${{ env.YOUTUBE_VERSION }} UYOU_VERSION=${{ inputs.UYOU_VERSION }} IPA=Payload/YouTube.app FINALPACKAGE=1
 
       - name: 🚀 Publish Draft Release
