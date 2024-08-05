@@ -105,7 +105,7 @@ jobs:
       - name: 📦 Build IPA
         working-directory: main
         run: |
-          zed -i "" "s|tar -xf Tweaks/uYou/com.miro.uyou|ar -xf Tweaks/uYou/com.miro.uyou|g" Makefile
+          sed -i "" "s|tar -xf Tweaks/uYou/com.miro.uyou|ar -xf Tweaks/uYou/com.miro.uyou|g" Makefile
           make package YOUTUBE_VERSION=${{ env.YOUTUBE_VERSION }} UYOU_VERSION=${{ inputs.UYOU_VERSION }} IPA=Payload/YouTube.app FINALPACKAGE=1
 
       - name: 🚀 Publish Draft Release
