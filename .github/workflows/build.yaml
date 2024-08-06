@@ -33,7 +33,7 @@ jobs:
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           repository: dora727/uYouEnhanced
-          ref: ${{ inputs.uyouenhanced_version }}
+          ref: ${{ inputs.UYOUENHANCED_VERSION }}
           path: main
           submodules: recursive
 
