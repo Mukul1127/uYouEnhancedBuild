@@ -102,6 +102,6 @@ jobs:
 
       - name: 🚀 Publish Draft Release
         run: |
-          gh release create "(v${{ env.YOUTUBE_VERSION }})-(${{ inputs.UYOU_VERSION }})-(${{ inputs.UYOUENHANCED_VERSION }})-(${{ github.run_number }})" main/packages/*.ipa -d
+          gh release create "(v${{ env.YOUTUBE_VERSION }})-(${{ inputs.UYOU_VERSION }})-(${{ inputs.UYOUENHANCED_VERSION }})-(${{ github.run_number }})" main/packages/*.ipa -d -R ${{ github.repository }}
         env:
           GH_TOKEN: ${{ github.token }}
