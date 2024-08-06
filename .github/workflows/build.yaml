@@ -23,6 +23,8 @@ jobs:
   build:
     name: Build uYouEnhanced
     runs-on: macos-latest
+    permissions:
+      contents: write
     env:
       THEOS: ${{ github.workspace }}/theos
 
