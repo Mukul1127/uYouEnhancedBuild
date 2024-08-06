@@ -102,8 +102,7 @@ jobs:
           gmake package YOUTUBE_VERSION=${{ env.YOUTUBE_VERSION }} UYOU_VERSION=${{ inputs.UYOU_VERSION }} IPA=Payload/YouTube.app FINALPACKAGE=1
 
       - name: 🚀 Publish Draft Release
-        working-directory: main
         run: |
-          gh release create "(v${{ env.YOUTUBE_VERSION }})-(${{ inputs.UYOU_VERSION }})-(${{ inputs.UYOUENHANCED_VERSION }})-(${{ github.run_number }})" main/packages/uYouEnhanced_${{ env.YOUTUBE_VERSION }}-${{ inputs.UYOU_VERSION }}.ipa -d
+          gh release create "(v${{ env.YOUTUBE_VERSION }})-(${{ inputs.UYOU_VERSION }})-(${{ inputs.UYOUENHANCED_VERSION }})-(${{ github.run_number }})" main/packages/*.ipa -d
         env:
           GH_TOKEN: ${{ github.token }}
