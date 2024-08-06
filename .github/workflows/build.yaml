@@ -38,10 +38,9 @@ jobs:
       - name: 🛠️ Prepare YouTube IPA
         working-directory: main
         run: |
-          wget "${{ inputs.DECRYPTED_YOUTUBE_URL }}" --no-verbose -O YouTube.ipa
-          unzip -q YouTube.ipa
-
-          echo "YOUTUBE_VERSION=$(defaults read "$(pwd)/Payload/YouTube.app/Info" CFBundleVersion)" >> $GITHUB_ENV
+          wget "${{ inputs.DECRYPTED_YOUTUBE_URL }}" --no-verbose -O YouTube.zip
+          unzip -q YouTube.zip
+          echo YOUTUBE_VERSION=$(defaults read "$(pwd)/Payload/YouTube.app/Info" CFBundleVersion) >> $GITHUB_ENV
 
       - name: 💾 Install System Dependencies
         run: |
