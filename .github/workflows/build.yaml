@@ -30,9 +30,9 @@ jobs:
 
     steps:
       - name: 🚚 Check out the Repository
-        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
         with:
-          repository: dora727/uYouEnhanced
+          repository: arichornlover/uYouEnhanced
           ref: ${{ inputs.UYOUENHANCED_VERSION }}
           path: main
           submodules: recursive
@@ -61,7 +61,7 @@ jobs:
 
       - name: ⚙️ Setup Theos
         if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
         with:
           repository: theos/theos
           path: theos
@@ -69,7 +69,7 @@ jobs:
 
       - name: ⚙️ Setup iOS SDK
         if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
         with:
           repository: xybp888/iOS-SDKs
           path: theos/sdks
@@ -84,7 +84,7 @@ jobs:
           key: ${{ env.UPSTREAM_HEADS }}
 
       - name: ⚙️ Setup Theos Jailed
-        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+        uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
         with:
           repository: qnblackcat/theos-jailed
           path: theos-jailed
