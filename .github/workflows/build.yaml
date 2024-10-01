@@ -98,6 +98,7 @@ jobs:
       - name: 📦 Build IPA
         working-directory: main
         run: |
+          sed -i "" "s|iphone:latest:12.0|iphone:16.5:15.0|g" Tweaks/Alderis/Makefile
           gmake package YOUTUBE_VERSION=${{ env.YOUTUBE_VERSION }} UYOU_VERSION=${{ inputs.UYOU_VERSION }} IPA=Payload/YouTube.app FINALPACKAGE=1
 
       - name: 🚀 Publish Draft Release
