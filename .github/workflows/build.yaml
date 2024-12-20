@@ -98,7 +98,7 @@ jobs:
       - name: 📦 Fix Compilation and Build IPA
         working-directory: main
         run: |
-          for d in Tweaks/; do [ -f "${d}Makefile" ] && printf "\nexport TARGET = iphone:clang:17.5:15.0\n" >> "${d}Makefile"; done
+          for dir in Tweaks/*/; do [ -f "${dir}Makefile" ] && printf '%s\n\n%s' "export SDK_PATH = \$(THEOS)/sdks/iPhoneOS17.5.sdk/" "$(cat "${dir}Makefile")" > "${dir}Makefile"; done
           gmake package YOUTUBE_VERSION=${{ env.YOUTUBE_VERSION }} UYOU_VERSION=${{ inputs.UYOU_VERSION }} IPA=Payload/YouTube.app FINALPACKAGE=1
 
       - name:  🚀 Publish Draft Release
