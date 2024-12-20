@@ -22,7 +22,7 @@ on:
 jobs:
   build:
     name: Build uYouEnhanced
-    runs-on: macos-15
+    runs-on: macos-14
     permissions:
       contents: write
     env:
