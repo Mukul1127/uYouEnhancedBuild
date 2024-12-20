@@ -22,7 +22,7 @@ on:
 jobs:
   build:
     name: Build uYouEnhanced
-    runs-on: macos-latest
+    runs-on: macos-15
     permissions:
       contents: write
     env:
@@ -30,7 +30,7 @@ jobs:
 
     steps:
       - name: 🚚 Check out the Repository
-        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: arichornlover/uYouEnhanced
           ref: ${{ inputs.UYOUENHANCED_VERSION }}
@@ -40,7 +40,7 @@ jobs:
       - name: 🛠️ Prepare YouTube IPA
         working-directory: main
         run: |
-          wget "${{ inputs.DECRYPTED_YOUTUBE_URL }}" --no-verbose -O YouTube.zip
+          curl -Lo YouTube.zip "${{ inputs.DECRYPTED_YOUTUBE_URL }}"
           unzip -q YouTube.zip
           echo YOUTUBE_VERSION=$(defaults read "$(pwd)/Payload/YouTube.app/Info" CFBundleVersion) >> $GITHUB_ENV
 
@@ -50,18 +50,18 @@ jobs:
 
       - name: 🔍 Check cache
         run: |
-          echo UPSTREAM_HEADS=`git ls-remote https://github.com/theos/theos | head -n 1 | cut -f 1`-`git ls-remote https://github.com/theos/sdks | head -n 1 | cut -f 1` >> $GITHUB_ENV
+          echo UPSTREAM_HEADS=`git ls-remote https://github.com/theos/theos | head -n 1 | cut -f 1`-`git ls-remote https://github.com/xybp888/iOS-SDKs | head -n 1 | cut -f 1` >> $GITHUB_ENV
 
       - name: ♻️ Restore cache if available
         id: cache
-        uses: actions/cache/restore@3624ceb22c1c5a301c8db4169662070a689d9ea8 # v4.1.1
+        uses: actions/cache/restore@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
         with:
           path: ${{ github.workspace }}/theos
           key: ${{ env.UPSTREAM_HEADS }}
 
       - name: ⚙️ Setup Theos
         if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: theos/theos
           path: theos
@@ -69,22 +69,22 @@ jobs:
 
       - name: ⚙️ Setup iOS SDK
         if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
-          repository: theos/sdks
+          repository: xybp888/iOS-SDKs
           path: theos/sdks
-          sparse-checkout: "iPhoneOS16.5.sdk"
+          sparse-checkout: "iPhoneOS17.5.sdk"
           sparse-checkout-cone-mode: false
 
       - name: ♻️ Save cache if needed
         if: steps.cache.outputs.cache-hit != 'true'
-        uses: actions/cache/save@3624ceb22c1c5a301c8db4169662070a689d9ea8 # v4.1.1
+        uses: actions/cache/save@1bd1e32a3bdc45362d1e726936510720a7c30a57 # v4.2.0
         with:
           path: ${{ github.workspace }}/theos
           key: ${{ env.UPSTREAM_HEADS }}
 
       - name: ⚙️ Setup Theos Jailed
-        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           repository: qnblackcat/theos-jailed
           path: theos-jailed
@@ -100,9 +100,6 @@ jobs:
         run: |
           gmake package YOUTUBE_VERSION=${{ env.YOUTUBE_VERSION }} UYOU_VERSION=${{ inputs.UYOU_VERSION }} IPA=Payload/YouTube.app FINALPACKAGE=1
 
-      - name: 🚀 Publish Draft Release
-        uses: softprops/action-gh-release@c062e08bd532815e2082a85e87e3ef29c3e6d191 # v2.0.8
-        with:
-          tag_name: (v${{ env.YOUTUBE_VERSION }})-(${{ inputs.UYOU_VERSION }})-(${{ inputs.UYOUENHANCED_VERSION }})-(${{ github.run_number }})
-          files: main/packages/*.ipa
-          draft: true
+      - name:  🚀 Publish Draft Release
+        run: |
+          gh release create (v${{ env.YOUTUBE_VERSION }})-(${{ inputs.UYOU_VERSION }})-(${{ inputs.UYOUENHANCED_VERSION }})-(${{ github.run_number }}) main/packages/*.ipa -d
