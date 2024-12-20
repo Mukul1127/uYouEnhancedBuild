@@ -22,7 +22,7 @@ on:
 jobs:
   build:
     name: Build uYouEnhanced
-    runs-on: macos-15
+    runs-on: macos-14
     permissions:
       contents: write
     env:
@@ -98,7 +98,6 @@ jobs:
       - name: 📦 Fix Compilation and Build IPA
         working-directory: main
         run: |
-          for dir in Tweaks/*/; do [ -f "${dir}Makefile" ] && echo -e "\nexport SDK_PATH = \$(THEOS)/sdks/iPhoneOS17.5.sdk/\nexport SYSROOT = \$(SDK_PATH)" >> "${dir}Makefile"; done
           gmake package YOUTUBE_VERSION=${{ env.YOUTUBE_VERSION }} UYOU_VERSION=${{ inputs.UYOU_VERSION }} IPA=Payload/YouTube.app FINALPACKAGE=1
 
       - name:  🚀 Publish Draft Release
